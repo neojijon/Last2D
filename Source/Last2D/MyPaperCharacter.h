@@ -2,16 +2,18 @@
 
 #pragma once
 
-//#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "PaperCharacter.h"
 #include "MyPaperCharacter.generated.h"
 
-
+class UPaperFlipbook;
 class USpringArmComponent;
 class UCameraComponent;
+class UCharacterMovementComponent;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+template <typename T> struct TObjectPtr;
 
 /**
  * 
@@ -21,34 +23,41 @@ class LAST2D_API AMyPaperCharacter : public APaperCharacter
 {
 	GENERATED_BODY()
 
+public:
+	AMyPaperCharacter();
 
-	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	USpringArmComponent* SpringArm;
 
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* Camera;
+protected:
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
+	
+	virtual void Jump() override;
+	virtual void StopJumping() override;
 
-	/** MappingContext */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputMappingContext* DefaultMappingContext;
 
-	/** IA_Attack; Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputAction> IA_Attack;;
+public:
+	void Walk(const FInputActionValue& Value);
 
-	/** Move Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputAction> IA_Move;
+	//공격 Input 이벤트
+	void Attack(const FInputActionValue& Value);
 
-	/** Look Input Action */
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	//UInputAction* LookAction;
+	
 
-		// Flipbook Animations
+	UFUNCTION()	void OnAttackFinished();
+
+	void UpdateCharacter();
+
+	void UpdateAnimation();
+
+private:
+
+	// Flipbook Animations
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UPaperFlipbook> FB_Char_Idle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UPaperFlipbook> FB_Char_Walk;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UPaperFlipbook> FB_Char_Run;
@@ -56,36 +65,19 @@ class LAST2D_API AMyPaperCharacter : public APaperCharacter
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UPaperFlipbook> FB_Char_Attack01;
 
-public:
-	AMyPaperCharacter();
-
-protected:
-	// APawn interface
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	// To add mapping context
-	virtual void BeginPlay();
-	virtual void Tick(float DeltaTime) override;
-
-
-public:
-	//이동 Input 이벤트
-	void Move(const FInputActionValue& Value);
-	//공격 Input 이벤트
-	UFUNCTION()	void Attack(const FInputActionValue& Value);
-
-	UFUNCTION()	void OnAttackFinished();	
-	//void UpdateAnimation();
-
 
 	// Movement state
 	bool bIsAttacking;
 	FVector2D MovementInput;
 
-public:
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return SpringArm; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return Camera; }
+	// 카메라와 Spring Arm Components 를  추가함.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class USpringArmComponent> SpringArm;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UCameraComponent> Camera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Movement", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UCharacterMovementComponent> Movement;
+	
 };

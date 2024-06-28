@@ -1,29 +1,31 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "MyPaperCharacter.h"
-#include "Engine/LocalPlayer.h"
 
-//컴퍼넌트
+#include "MyPaperCharacter.h"
+
+
+#include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "PaperFlipbookComponent.h"
-
-//Input
 #include "GameFramework/Controller.h"
+
+#include "PaperFlipbookComponent.h"
 #include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
-#include "InputActionValue.h"
+
+#include "MyPlayerController.h"
+
 
 
 AMyPaperCharacter::AMyPaperCharacter()
 {
+	
     //카메라, 스프링암 컴퍼넌트를 값 세팅
     // Spring Arm Component
     SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
     SpringArm->SetupAttachment(RootComponent);
-    SpringArm->TargetArmLength = 500.0f;
+    SpringArm->TargetArmLength = 300.0f;
     SpringArm->SetRelativeRotation(FRotator(-10.0f, -90.0f, 0.0f)); //횡스크롤 화면 
     //SpringArm->SetWorldRotation(FRotator(0.0f, 0.0f, -90.0f));
     SpringArm->bDoCollisionTest = false;
@@ -36,20 +38,36 @@ AMyPaperCharacter::AMyPaperCharacter()
     Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
     Camera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-    PrimaryActorTick.bCanEverTick = true;
-    bIsAttacking = false;
+    //점프관련 수치 초기화
+        // Configure character movement
+    GetCharacterMovement()->GravityScale = 2.0f;
+    GetCharacterMovement()->AirControl = 0.80f;
+    GetCharacterMovement()->JumpZVelocity = 1000.f;
+    GetCharacterMovement()->GroundFriction = 3.0f;
+    GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+    GetCharacterMovement()->MaxFlySpeed = 600.0f;
+    
 
+    bIsAttacking = false;
+    PrimaryActorTick.bCanEverTick = true;
 }
+
+
 
 void AMyPaperCharacter::BeginPlay()
 {
-    Super::BeginPlay();
+	Super::BeginPlay();
 
-    bIsAttacking = false;
-    GetSprite()->SetFlipbook(FB_Char_Idle);
+    bIsAttacking = false;    
 
-    //GetSprite 이벤트 함수 등록
-    GetSprite()->OnFinishedPlaying.AddDynamic(this, &AMyPaperCharacter::OnAttackFinished);
+    if (GetSprite() != nullptr)
+    {
+        GetSprite()->SetFlipbook(FB_Char_Idle);
+        //GetSprite 이벤트 함수 등록
+        GetSprite()->OnFinishedPlaying.AddDynamic(this, &AMyPaperCharacter::OnAttackFinished);
+
+        UE_LOG(LogTemp, Warning, TEXT("OnFinishedPlaying.AddDynamic"));
+    }
 }
 
 
@@ -58,30 +76,34 @@ void AMyPaperCharacter::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 
     //추가 구현하면 됨.
-    //UpdateAnimation();
+    UpdateCharacter();
 
 }
 
 
-void AMyPaperCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+
+
+void AMyPaperCharacter::Walk(const FInputActionValue& Value)
 {
-    Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-    if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-    {
-        EnhancedInputComponent->BindAction(IA_Move.Get(), ETriggerEvent::Triggered, this, &AMyPaperCharacter::Move);
-        EnhancedInputComponent->BindAction(IA_Attack.Get(), ETriggerEvent::Triggered, this, &AMyPaperCharacter::Attack);
-    }
-
+    UE_LOG(LogTemp, Warning, TEXT("Walk!"));
 }
 
 
-void AMyPaperCharacter::Move(const FInputActionValue& Value)
+void AMyPaperCharacter::Jump()
 {
-    FVector2D MovementVector = Value.Get<FVector2D>();
-    AddMovementInput(FVector(MovementVector.X, 0.0f, 0.0f));
+    Super::Jump();
 
-    UE_LOG(LogTemp, Warning, TEXT("EnhancedInputComponent"));
+    GetSprite()->SetFlipbook(FB_Char_Attack01);
+    UE_LOG(LogTemp, Warning, TEXT("Jump!"));
+}
+
+
+void AMyPaperCharacter::StopJumping()
+{
+    Super::Jump();
+
+    GetSprite()->SetFlipbook(FB_Char_Attack01);
+    UE_LOG(LogTemp, Warning, TEXT("StopJumping!"));
 }
 
 void AMyPaperCharacter::Attack(const FInputActionValue& Value)
@@ -91,19 +113,82 @@ void AMyPaperCharacter::Attack(const FInputActionValue& Value)
     {
         bIsAttacking = true;
         GetSprite()->SetFlipbook(FB_Char_Attack01);
-        GetSprite()->SetLooping(false);
+        GetSprite()->SetLooping(false);        
         GetSprite()->PlayFromStart();
-
-        UE_LOG(LogTemp, Warning, TEXT("Attack!"));
     }
 }
 
 
-void OnAttackFinished()
+void AMyPaperCharacter::OnAttackFinished()
 {
+    UE_LOG(LogTemp, Warning, TEXT("OnAttackFinished!"));
+
+    bIsAttacking = false;
+    GetSprite()->SetLooping(true);
+    GetSprite()->Play();
+    UpdateAnimation();
 
 }
 
 
 
 
+void AMyPaperCharacter::UpdateCharacter()
+{
+    // Update animation to match the motion
+    UpdateAnimation();
+
+
+    if (!bIsAttacking)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("UpdateCharacter!"));
+
+
+        const FVector PlayerVelocity = GetActorForwardVector();
+        float TravelDirection = PlayerVelocity.X;
+
+        if (Controller != nullptr)
+        {
+
+            AMyPlayerController* MyController = Cast<AMyPlayerController>(Controller);
+
+            if (MyController != nullptr)
+            {
+                if (TravelDirection < 0.0f)
+                {
+                    MyController->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
+
+                    UE_LOG(LogTemp, Warning, TEXT("SetControlRotation!"));
+                }
+                else if (TravelDirection > 0.0f)
+                {
+                    MyController->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
+
+                    UE_LOG(LogTemp, Warning, TEXT("SetControlRotation!"));
+                }
+
+            }
+
+        }
+    }
+}
+
+
+
+void AMyPaperCharacter::UpdateAnimation()
+{
+    if (!bIsAttacking)
+    {
+        const FVector PlayerVelocity = GetVelocity();
+        const float PlayerSpeedSqr = PlayerVelocity.SizeSquared();
+
+        // Are we moving or standing still?
+        UPaperFlipbook* DesiredAnimation = (PlayerSpeedSqr > 0.0f) ? FB_Char_Run : FB_Char_Idle;
+        if (GetSprite()->GetFlipbook() != DesiredAnimation)
+        {
+            GetSprite()->SetFlipbook(DesiredAnimation);
+        }
+
+    }
+    
+}
