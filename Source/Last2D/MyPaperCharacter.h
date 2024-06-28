@@ -31,16 +31,20 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	
+	//virtual void SetupInputComponent() override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+public:
+
 	virtual void Jump() override;
 	virtual void StopJumping() override;
 
+	void Move(const FInputActionValue& Value);
 
-public:
 	void Walk(const FInputActionValue& Value);
 
 	//공격 Input 이벤트
 	void Attack(const FInputActionValue& Value);
-
 	
 
 	UFUNCTION()	void OnAttackFinished();
@@ -64,6 +68,15 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UPaperFlipbook> FB_Char_Attack01;
+
+
+	//JumpStart
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UPaperFlipbook> FB_Char_JumpStart;
+
+	//JumpEnd
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UPaperFlipbook> FB_Char_JumpEnd;
 
 
 	// Movement state

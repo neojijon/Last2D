@@ -36,8 +36,9 @@ public:
     void Move(const FInputActionValue& Value);
     void Walk(const FInputActionValue& Value);
 	void Attack(const FInputActionValue& Value);
-	void Jump(const FInputActionValue& Value);
-	void StopJumping(const FInputActionValue& Value);
+
+	void Jump();
+	void StopJumping();
 
 private:
 	// Input Actions

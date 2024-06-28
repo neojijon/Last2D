@@ -49,6 +49,7 @@ AMyPaperCharacter::AMyPaperCharacter()
     
 
     bIsAttacking = false;
+
     PrimaryActorTick.bCanEverTick = true;
 }
 
@@ -80,7 +81,19 @@ void AMyPaperCharacter::Tick(float DeltaTime)
 
 }
 
+void AMyPaperCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+    Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
 
+
+void AMyPaperCharacter::Move(const FInputActionValue& Value)
+{
+    //if()
+    UE_LOG(LogTemp, Warning, TEXT("Move!"));
+
+
+}
 
 
 void AMyPaperCharacter::Walk(const FInputActionValue& Value)
@@ -93,7 +106,7 @@ void AMyPaperCharacter::Jump()
 {
     Super::Jump();
 
-    GetSprite()->SetFlipbook(FB_Char_Attack01);
+    GetSprite()->SetFlipbook(FB_Char_JumpStart);
     UE_LOG(LogTemp, Warning, TEXT("Jump!"));
 }
 
@@ -102,7 +115,7 @@ void AMyPaperCharacter::StopJumping()
 {
     Super::Jump();
 
-    GetSprite()->SetFlipbook(FB_Char_Attack01);
+    GetSprite()->SetFlipbook(FB_Char_JumpEnd);
     UE_LOG(LogTemp, Warning, TEXT("StopJumping!"));
 }
 
@@ -156,15 +169,15 @@ void AMyPaperCharacter::UpdateCharacter()
             {
                 if (TravelDirection < 0.0f)
                 {
-                    MyController->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
+                    MyController->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));                   
 
-                    UE_LOG(LogTemp, Warning, TEXT("SetControlRotation!"));
+                    UE_LOG(LogTemp, Warning, TEXT("SetControlRotation! FRotator : 180.0f "));
                 }
                 else if (TravelDirection > 0.0f)
                 {
                     MyController->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
 
-                    UE_LOG(LogTemp, Warning, TEXT("SetControlRotation!"));
+                    UE_LOG(LogTemp, Warning, TEXT("SetControlRotation! FRotator : 0.0f "));
                 }
 
             }

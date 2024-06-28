@@ -55,16 +55,14 @@ void AMyPlayerController::SetupInputComponent()
 
 void AMyPlayerController::Move(const FInputActionValue& Value)
 {
-    if (APawn* ControlledPawn = GetPawn())
-    {
-        FVector2D MovementVector = Value.Get<FVector2D>();
-        ControlledPawn->AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MovementVector.X);
+    //if (APawn* ControlledPawn = GetPawn())
+    //{
+    //    FVector2D MovementVector = Value.Get<FVector2D>();
+    //    ControlledPawn->AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MovementVector.X);
 
-        //UE_LOG(LogTemp, Warning, TEXT("MovementVector: %f"), MovementVector.X);        
-    }
-
-
-    /*
+    //    //UE_LOG(LogTemp, Warning, TEXT("MovementVector: %f"), MovementVector.X);        
+    //}
+        
     if (APawn* ControlledPawn = GetPawn())
     {
         if (AMyPaperCharacter* MyCharacter = Cast<AMyPaperCharacter>(ControlledPawn))
@@ -72,7 +70,7 @@ void AMyPlayerController::Move(const FInputActionValue& Value)
             MyCharacter->Move(Value);
         }
     }
-    */
+    
 }
 
 void AMyPlayerController::Walk(const FInputActionValue& Value)
@@ -89,30 +87,30 @@ void AMyPlayerController::Walk(const FInputActionValue& Value)
 }
 
 
-void AMyPlayerController::Jump(const FInputActionValue& Value)
+void AMyPlayerController::Jump()
 {
     UE_LOG(LogTemp, Warning, TEXT("Jump"));
-   /* if (APawn* ControlledPawn = GetPawn())
+   if (APawn* ControlledPawn = GetPawn())
     {
         if (AMyPaperCharacter* MyCharacter = Cast<AMyPaperCharacter>(ControlledPawn))
         {
             MyCharacter->Jump();
         }
-    }*/
+    }
 }
 
-void AMyPlayerController::StopJumping(const FInputActionValue& Value)
+void AMyPlayerController::StopJumping()
 {
 
     UE_LOG(LogTemp, Warning, TEXT("StopJumping"));
 
- /*   if (APawn* ControlledPawn = GetPawn())
+    if (APawn* ControlledPawn = GetPawn())
     {
         if (AMyPaperCharacter* MyCharacter = Cast<AMyPaperCharacter>(ControlledPawn))
         {
-            MyCharacter->Jump();
+            MyCharacter->StopJumping();
         }
-    }*/
+    }
 }
 
 void AMyPlayerController::Attack(const FInputActionValue& Value)
