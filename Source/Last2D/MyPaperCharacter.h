@@ -36,7 +36,7 @@ public:
 	virtual void Jump() override;
 	virtual void StopJumping() override;
 
-	void TurnRight(float Value);
+	void TurnRight();
 
 
 	void Move(float Value);

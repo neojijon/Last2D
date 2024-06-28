@@ -33,6 +33,18 @@ AMyPaperCharacter::AMyPaperCharacter()
     SpringArm->bInheritYaw = false;
     SpringArm->bInheritRoll = false;
 
+
+
+    // Use only Yaw from the controller and ignore the rest of the rotation.
+    bUseControllerRotationPitch = false;
+    bUseControllerRotationYaw = true;
+    bUseControllerRotationRoll = false;
+
+    // Set the size of our collision capsule.
+    //GetCapsuleComponent()->SetCapsuleHalfHeight(96.0f);
+    //GetCapsuleComponent()->SetCapsuleRadius(40.0f);
+
+
     // Camera Component
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("SideViewCamera"));
     Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
@@ -44,8 +56,12 @@ AMyPaperCharacter::AMyPaperCharacter()
     GetCharacterMovement()->AirControl = 0.80f;
     GetCharacterMovement()->JumpZVelocity = 1000.f;
     GetCharacterMovement()->GroundFriction = 3.0f;
-    GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+    GetCharacterMovement()->MaxWalkSpeed = 300.0f;
     GetCharacterMovement()->MaxFlySpeed = 600.0f;
+
+    // Lock character motion onto the XZ plane, so the character can't move in or out of the screen
+    GetCharacterMovement()->bConstrainToPlane = true;
+    GetCharacterMovement()->SetPlaneConstraintNormal(FVector(0.0f, -1.0f, 0.0f));
     
 
     bIsAttacking = false;
@@ -87,33 +103,9 @@ void AMyPaperCharacter::Move(float Value)
 {
     if (!bIsAttacking && bIsJuming == false)
     {
-        //케릭터 방향 전환
-        TurnRight(Value);
-
-        APawn::AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Value);
+        AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Value);
     }
 }
-
-
-void AMyPaperCharacter::TurnRight(float Value)
-{
-    if ((Controller != nullptr) && (Value != 0.0f))
-    {
-        float fYaw = 0;
-
-        if (Value > 0)
-        {
-            fYaw = 0;
-        }
-        else if (Value < 0.0f)
-        {
-            fYaw = 180;            
-        }        
-
-        Controller->SetControlRotation(FRotator(0.0f, fYaw, 0.0f));
-    }
-}
-
 
 
 void AMyPaperCharacter::Walk(const FInputActionValue& Value)
@@ -126,33 +118,39 @@ void AMyPaperCharacter::Jump()
 {
     Super::Jump();
 
-    bIsJuming = true;
-
-    if (GetSprite())
+    if (!bIsAttacking && !bIsJuming)
     {
-        GetSprite()->SetFlipbook(FB_Char_JumpStart);
-        GetSprite()->SetLooping(false);
-        GetSprite()->Play();
-    }
+        bIsJuming = true;
 
-    
+        if (GetSprite())
+        {
+            GetSprite()->SetFlipbook(FB_Char_JumpStart);
+            GetSprite()->SetLooping(false);
+            GetSprite()->PlayFromStart();
+        }
+
+    }
 }
 
 
 void AMyPaperCharacter::StopJumping()
 {
-    if (GetSprite())
+    if (bIsJuming)
     {
-        GetSprite()->SetFlipbook(FB_Char_JumpEnd);
-        GetSprite()->SetLooping(false);
-        GetSprite()->Play();
-    }
+        if (GetSprite())
+        {
+            GetSprite()->SetFlipbook(FB_Char_JumpEnd);
+            GetSprite()->SetLooping(false);
+            GetSprite()->PlayFromStart();
 
+            bIsJuming = false;
+        }
 
-    bIsJuming = false;
-    UE_LOG(LogTemp, Warning, TEXT("StopJumping!"));
+        
+        UE_LOG(LogTemp, Warning, TEXT("StopJumping!"));
 
-    Super::StopJumping();
+        Super::StopJumping();
+    }   
 }
 
 void AMyPaperCharacter::Attack(const FInputActionValue& Value)
@@ -182,17 +180,41 @@ void AMyPaperCharacter::OnAttackFinished()
 
 
 void AMyPaperCharacter::UpdateCharacter()
-{    
+{   
+    TurnRight();
     UpdateAnimation();
-
+    
 }
 
+
+
+void AMyPaperCharacter::TurnRight()
+{
+    if (!bIsAttacking && !bIsJuming)
+    {
+        // Now setup the rotation of the controller based on the direction we are travelling
+        const FVector PlayerVelocity = GetVelocity();
+        float TravelDirection = PlayerVelocity.X;
+        // Set the rotation so that the character faces his direction of travel.
+        if (Controller != nullptr)
+        {
+            if (TravelDirection < 0.0f)
+            {
+                Controller->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
+            }
+            else if (TravelDirection > 0.0f)
+            {
+                Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
+            }
+        }
+    }
+}
 
 
 void AMyPaperCharacter::UpdateAnimation()
 {
     
-    if (!bIsAttacking && bIsJuming == false)
+    if (!bIsAttacking && !bIsJuming)
     {
         const FVector PlayerVelocity = GetVelocity();
         const float PlayerSpeedSqr = PlayerVelocity.SizeSquared();
