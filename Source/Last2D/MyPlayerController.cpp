@@ -54,20 +54,13 @@ void AMyPlayerController::SetupInputComponent()
 }
 
 void AMyPlayerController::Move(const FInputActionValue& Value)
-{
-    //if (APawn* ControlledPawn = GetPawn())
-    //{
-    //    FVector2D MovementVector = Value.Get<FVector2D>();
-    //    ControlledPawn->AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MovementVector.X);
-
-    //    //UE_LOG(LogTemp, Warning, TEXT("MovementVector: %f"), MovementVector.X);        
-    //}
-        
+{       
     if (APawn* ControlledPawn = GetPawn())
     {
         if (AMyPaperCharacter* MyCharacter = Cast<AMyPaperCharacter>(ControlledPawn))
-        {            
-            MyCharacter->Move(Value);
+        {   
+            FVector2D MovementVector = Value.Get<FVector2D>();
+            MyCharacter->Move(MovementVector.X);
         }
     }
     

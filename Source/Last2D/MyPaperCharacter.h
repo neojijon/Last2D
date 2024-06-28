@@ -31,15 +31,15 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	
-	//virtual void SetupInputComponent() override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 public:
 
 	virtual void Jump() override;
 	virtual void StopJumping() override;
 
-	void Move(const FInputActionValue& Value);
+	void TurnRight(float Value);
+
+
+	void Move(float Value);
 
 	void Walk(const FInputActionValue& Value);
 
@@ -52,6 +52,8 @@ public:
 	void UpdateCharacter();
 
 	void UpdateAnimation();
+
+	
 
 private:
 
@@ -81,6 +83,7 @@ private:
 
 	// Movement state
 	bool bIsAttacking;
+	bool bIsJuming;
 	FVector2D MovementInput;
 
 	// 카메라와 Spring Arm Components 를  추가함.
