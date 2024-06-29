@@ -44,7 +44,9 @@ void AMyPlayerController::SetupInputComponent()
     if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
     {
         EnhancedInputComponent->BindAction(IA_Move.Get(), ETriggerEvent::Triggered, this, &AMyPlayerController::Move);
-        EnhancedInputComponent->BindAction(IA_Walk.Get(), ETriggerEvent::Triggered, this, &AMyPlayerController::Walk);        
+        EnhancedInputComponent->BindAction(IA_Walk.Get(), ETriggerEvent::Triggered, this, &AMyPlayerController::Walk);  
+
+        //Attack
         EnhancedInputComponent->BindAction(IA_Attack.Get(), ETriggerEvent::Triggered, this, &AMyPlayerController::Attack);        
 
         // Jumping
@@ -97,13 +99,13 @@ void AMyPlayerController::StopJumping()
 
     UE_LOG(LogTemp, Warning, TEXT("StopJumping"));
 
-    if (APawn* ControlledPawn = GetPawn())
+   /* if (APawn* ControlledPawn = GetPawn())
     {
         if (AMyPaperCharacter* MyCharacter = Cast<AMyPaperCharacter>(ControlledPawn))
         {
             MyCharacter->StopJump();
         }
-    }
+    }*/
 }
 
 void AMyPlayerController::Attack(const FInputActionValue& Value)
@@ -112,7 +114,7 @@ void AMyPlayerController::Attack(const FInputActionValue& Value)
     {
         if (AMyPaperCharacter* MyCharacter = Cast<AMyPaperCharacter>(ControlledPawn))
         {
-            MyCharacter->Attack(Value);            
+            MyCharacter->Attack();            
         }
     }
 }

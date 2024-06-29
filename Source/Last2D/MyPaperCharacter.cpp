@@ -80,13 +80,16 @@ void AMyPaperCharacter::BeginPlay()
 
     bIsAttacking = false;    
 
+    InitializeAnimations();
+
     if (GetSprite() != nullptr)
     {
-        GetSprite()->SetFlipbook(FB_Char_Idle);
+        //GetSprite()->SetFlipbook(ECharacterState::Idle);        
+        UpdateAnimation(ECharacterState::Idle);
         //GetSprite 이벤트 함수 등록
         GetSprite()->OnFinishedPlaying.AddDynamic(this, &AMyPaperCharacter::OnAttackFinished);
 
-        UE_LOG(LogTemp, Warning, TEXT("OnFinishedPlaying.AddDynamic"));
+        //UE_LOG(LogTemp, Warning, TEXT("OnFinishedPlaying.AddDynamic"));
     }
 }
 
@@ -95,7 +98,6 @@ void AMyPaperCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    //추가 구현하면 됨.
     UpdateCharacter();
 
 }
@@ -110,35 +112,42 @@ void AMyPaperCharacter::Move(float Value)
 }
 
 
-void AMyPaperCharacter::Walk(const FInputActionValue& Value)
+void AMyPaperCharacter::Walk()
 {
     UE_LOG(LogTemp, Warning, TEXT("Walk!"));
+
+    UpdateAnimation(ECharacterState::Walk);
 }
 
 
 void AMyPaperCharacter::StartJump()
 {
-    Jump();
-    bIsJumping = true;    
-    GetSprite()->SetFlipbook(FB_Char_JumpReady);
+    if (CurrentState != ECharacterState::JumpReady )
+    {
+        Jump();
+        bIsJumping = true;
+
+        UpdateAnimation(ECharacterState::JumpReady);
+    }    
 }
 
 void AMyPaperCharacter::StopJump()
-{    
+{   
     StopJumping();
     bIsJumping = false;
-    GetSprite()->SetFlipbook(FB_Char_Landing);
+    UpdateAnimation(ECharacterState::Landing);    
 }
 
 
-void AMyPaperCharacter::Attack(const FInputActionValue& Value)
+void AMyPaperCharacter::Attack()
 {
     // 공격 로직을 여기에 구현
-    if (!bIsAttacking && bIsJumping == false)
+    if (!bIsAttacking && bIsJumping == false && CurrentState != ECharacterState::Attack01)
     {
         bIsAttacking = true;
-        GetSprite()->SetFlipbook(FB_Char_Attack01);
-        GetSprite()->SetLooping(false);        
+
+        UpdateAnimation(ECharacterState::Attack01);
+        GetSprite()->SetLooping(false);
         GetSprite()->PlayFromStart();
     }
 }
@@ -146,128 +155,147 @@ void AMyPaperCharacter::Attack(const FInputActionValue& Value)
 
 void AMyPaperCharacter::OnAttackFinished()
 {
-    UE_LOG(LogTemp, Warning, TEXT("OnAttackFinished!"));
 
     bIsAttacking = false;
     GetSprite()->SetLooping(true);
     GetSprite()->Play();
-    UpdateAnimation();
-
+    UpdateAnimation(ECharacterState::Idle);
+    
 }
 
 
-
 void AMyPaperCharacter::UpdateCharacter()
-{   
-    TurnRight();
-    UpdateAnimation();
-    
+{
+    const FVector PlayerVelocity = GetVelocity();
+    const float PlayerSpeed = PlayerVelocity.Size();
+
+    if (!bIsAttacking)
+    {
+        if (bIsJumping)
+        {
+
+            /* if (PlayerVelocity.Z == 0)
+             {
+                 UpdateAnimation(ECharacterState::JumpReady);
+             }*/
+
+
+            switch (CurrentState)
+            {
+            case ECharacterState::JumpReady:
+                if (PlayerVelocity.Z > 0)
+                {
+                    UpdateAnimation(ECharacterState::JumpUp);
+                }
+                break;
+
+            case ECharacterState::JumpUp:
+                if (PlayerVelocity.Z <= 0)
+                {
+                    UpdateAnimation(ECharacterState::Jumping);
+                }
+                break;
+
+            case ECharacterState::Jumping:
+                if (PlayerVelocity.Z < 0)
+                {
+                    UpdateAnimation(ECharacterState::Falling);
+                }
+                break;
+
+            case ECharacterState::Falling:
+                if (GetCharacterMovement()->IsMovingOnGround())
+                {
+                    StopJump();
+                }
+                break;
+
+            case ECharacterState::Landing:
+               
+                if (PlayerSpeed > 0.0f)
+                {
+                    UpdateAnimation(ECharacterState::Run);
+                }
+                else
+                {
+                    UpdateAnimation(ECharacterState::Idle);
+                }
+                break;
+
+            default:
+                if (PlayerSpeed > 0.0f)
+                {
+                    UpdateAnimation(ECharacterState::Run);
+                }
+                else
+                {
+                    UpdateAnimation(ECharacterState::Idle);
+                }
+                break;
+            }
+
+        }
+        else
+        {
+
+            if (PlayerSpeed > 0.0f)
+            {
+                UpdateAnimation(ECharacterState::Run);
+            }
+            else
+            {
+                UpdateAnimation(ECharacterState::Idle);
+            }
+            // 방향에 따른 캐릭터 회전
+            TurnRight();
+        }
+
+    }
+     
 }
 
 
 
 void AMyPaperCharacter::TurnRight()
 {
-    if (!bIsAttacking && !bIsJumping)
-    {
-        // Now setup the rotation of the controller based on the direction we are travelling
-        const FVector PlayerVelocity = GetVelocity();
-        float TravelDirection = PlayerVelocity.X;
-        // Set the rotation so that the character faces his direction of travel.
-        if (Controller != nullptr)
-        {
-            if (TravelDirection < 0.0f)
-            {
-                Controller->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
-            }
-            else if (TravelDirection > 0.0f)
-            {
-                Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
-            }
-        }
-
-        LastVelocity = PlayerVelocity;
-    }
-}
-
-
-void AMyPaperCharacter::UpdateAnimation()
-{
     const FVector PlayerVelocity = GetVelocity();
-    const float PlayerSpeed = PlayerVelocity.SizeSquared();
+    const float PlayerSpeed = PlayerVelocity.Size();
 
-    UPaperFlipbook* DesiredAnimation = FB_Char_Idle;
+    // 방향에 따른 캐릭터 회전
+    if (Controller != nullptr)
+    {
 
-    if (GetCharacterMovement()->IsFalling())
-    {
-        if (PlayerVelocity.Z > 0)
+        if (PlayerVelocity.X < 0.0f)
         {
-            DesiredAnimation = FB_Char_JumpUp;
+            GetSprite()->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
         }
-        else if(PlayerVelocity.Z < 0)
+        else if (PlayerVelocity.X > 0.0f)
         {
-            DesiredAnimation = FB_Char_Falling;
+            GetSprite()->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
         }
-        else
-        {
-            //if (bIsJumping)
-            //{
-                DesiredAnimation = FB_Char_JumpUp;
-                bIsJumping = false;
-            //}                  
-        }
-    }  
-   /* else if (GetCharacterMovement()->IsMovingOnGround())
-    {
-        DesiredAnimation = FB_Char_Landing;        
-    }*/
-    else if (PlayerSpeed > 0.0f)
-    {
-        DesiredAnimation = FB_Char_Run;
-    }
-
-    if (GetSprite()->GetFlipbook() != DesiredAnimation)
-    {
-        GetSprite()->SetFlipbook(DesiredAnimation);
     }
 }
 
-/*
-void AMyPaperCharacter::UpdateAnimation()
-{
-    
-    if (!bIsAttacking && !bIsJumping)
-    {
-        const FVector PlayerVelocity = GetVelocity();
-        const float PlayerSpeedSqr = PlayerVelocity.SizeSquared();
 
-        // Are we moving or standing still?
-        UPaperFlipbook* DesiredAnimation = (PlayerSpeedSqr > 0.0f) ? FB_Char_Run : FB_Char_Idle;
+
+void AMyPaperCharacter::InitializeAnimations()
+{
+
+}
+
+void AMyPaperCharacter::UpdateAnimation(ECharacterState NewState)
+{
+    if (CharacterAnimations.IsEmpty()) return;
+
+    if (CharacterAnimations.Contains(NewState))
+    {
+        TObjectPtr<UPaperFlipbook> DesiredAnimation = CharacterAnimations[NewState];
         if (GetSprite()->GetFlipbook() != DesiredAnimation)
         {
             GetSprite()->SetFlipbook(DesiredAnimation);
-        }
-
-    }
-
-    if (!bIsAttacking && bIsJumping) {
-        if (GetSprite())
-        {
-            GetSprite()->SetFlipbook(FB_Char_JumpStart);
-            GetSprite()->SetLooping(false);
-            GetSprite()->PlayFromStart();
+            CurrentState = NewState;            
         }
     }
-    else
-    {
-        if (GetSprite())
-        {
-            GetSprite()->SetFlipbook(FB_Char_JumpEnd);
-            GetSprite()->SetLooping(false);
-            GetSprite()->PlayFromStart();
-        }
-    }
-    
 }
 
-*/
+
