@@ -36,8 +36,11 @@ protected:
 	
 public:
 
-	virtual void Jump() override;
-	virtual void StopJumping() override;
+	//virtual void Jump() override;
+	//virtual void StopJumping() override;
+
+	void StartJump();
+	void StopJump();
 
 	void TurnRight();
 
@@ -81,7 +84,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UPaperFlipbook> FB_Char_Attack01;
 
-
+	/*
 	//JumpStart
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UPaperFlipbook> FB_Char_JumpStart;
@@ -89,6 +92,31 @@ private:
 	//JumpEnd
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UPaperFlipbook> FB_Char_JumpEnd;
+	*/
+
+	//점프를 세분화함
+	//JumpReady
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UPaperFlipbook> FB_Char_JumpReady;
+
+	//JumpUp
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UPaperFlipbook> FB_Char_JumpUp;
+
+
+	//Juming
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UPaperFlipbook> FB_Char_Jumping;
+
+
+	//Falling
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UPaperFlipbook> FB_Char_Falling;
+
+	//Landing
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UPaperFlipbook> FB_Char_Landing;
+
 
 
 	// 카메라와 Spring Arm Components 를  추가함.

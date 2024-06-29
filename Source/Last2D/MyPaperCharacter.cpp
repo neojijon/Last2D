@@ -116,29 +116,20 @@ void AMyPaperCharacter::Walk(const FInputActionValue& Value)
 }
 
 
-void AMyPaperCharacter::Jump()
+void AMyPaperCharacter::StartJump()
 {
-    Super::Jump();
-
-    if (!bIsAttacking && !bIsJumping)
-    {
-        bIsJumping = true;
-    }
+    Jump();
+    bIsJumping = true;    
+    GetSprite()->SetFlipbook(FB_Char_JumpReady);
 }
 
-
-void AMyPaperCharacter::StopJumping()
-{
-    if (bIsJumping)
-    {       
-
-        bIsJumping = false;
-        
-        UE_LOG(LogTemp, Warning, TEXT("StopJumping!"));
-
-        Super::StopJumping();
-    }   
+void AMyPaperCharacter::StopJump()
+{    
+    StopJumping();
+    bIsJumping = false;
+    GetSprite()->SetFlipbook(FB_Char_Landing);
 }
+
 
 void AMyPaperCharacter::Attack(const FInputActionValue& Value)
 {
@@ -211,13 +202,25 @@ void AMyPaperCharacter::UpdateAnimation()
     {
         if (PlayerVelocity.Z > 0)
         {
-            DesiredAnimation = FB_Char_JumpStart;
+            DesiredAnimation = FB_Char_JumpUp;
+        }
+        else if(PlayerVelocity.Z < 0)
+        {
+            DesiredAnimation = FB_Char_Falling;
         }
         else
         {
-            DesiredAnimation = FB_Char_JumpEnd;
+            //if (bIsJumping)
+            //{
+                DesiredAnimation = FB_Char_JumpUp;
+                bIsJumping = false;
+            //}                  
         }
-    }
+    }  
+   /* else if (GetCharacterMovement()->IsMovingOnGround())
+    {
+        DesiredAnimation = FB_Char_Landing;        
+    }*/
     else if (PlayerSpeed > 0.0f)
     {
         DesiredAnimation = FB_Char_Run;

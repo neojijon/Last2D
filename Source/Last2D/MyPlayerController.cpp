@@ -87,7 +87,7 @@ void AMyPlayerController::Jump()
     {
         if (AMyPaperCharacter* MyCharacter = Cast<AMyPaperCharacter>(ControlledPawn))
         {
-            MyCharacter->Jump();
+            MyCharacter->StartJump();
         }
     }
 }
@@ -101,7 +101,7 @@ void AMyPlayerController::StopJumping()
     {
         if (AMyPaperCharacter* MyCharacter = Cast<AMyPaperCharacter>(ControlledPawn))
         {
-            MyCharacter->StopJumping();
+            MyCharacter->StopJump();
         }
     }
 }
