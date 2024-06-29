@@ -15,6 +15,9 @@ class UInputAction;
 struct FInputActionValue;
 template <typename T> struct TObjectPtr;
 
+//class FVector;
+//class FVector2D;
+
 /**
  * 
  */
@@ -49,10 +52,17 @@ public:
 
 	UFUNCTION()	void OnAttackFinished();
 
+private:
 	void UpdateCharacter();
 
 	void UpdateAnimation();
 
+private:
+	// Movement state
+	bool bIsAttacking;
+	bool bIsJumping;
+	FVector2D MovementInput;
+	FVector LastVelocity;
 	
 
 private:
@@ -80,11 +90,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UPaperFlipbook> FB_Char_JumpEnd;
 
-
-	// Movement state
-	bool bIsAttacking;
-	bool bIsJuming;
-	FVector2D MovementInput;
 
 	// 카메라와 Spring Arm Components 를  추가함.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))

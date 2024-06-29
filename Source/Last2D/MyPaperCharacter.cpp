@@ -13,6 +13,8 @@
 
 #include "PaperFlipbookComponent.h"
 #include "EnhancedInputComponent.h"
+//#include "Math/Vector.h"
+//#include "Math/Vector2D.h"
 
 #include "MyPlayerController.h"
 
@@ -65,7 +67,7 @@ AMyPaperCharacter::AMyPaperCharacter()
     
 
     bIsAttacking = false;
-    bIsJuming = false;
+    bIsJumping = false;
 
     PrimaryActorTick.bCanEverTick = true;
 }
@@ -101,7 +103,7 @@ void AMyPaperCharacter::Tick(float DeltaTime)
 
 void AMyPaperCharacter::Move(float Value)
 {
-    if (!bIsAttacking && bIsJuming == false)
+    if (!bIsAttacking && bIsJumping == false)
     {
         AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Value);
     }
@@ -118,34 +120,19 @@ void AMyPaperCharacter::Jump()
 {
     Super::Jump();
 
-    if (!bIsAttacking && !bIsJuming)
+    if (!bIsAttacking && !bIsJumping)
     {
-        bIsJuming = true;
-
-        if (GetSprite())
-        {
-            GetSprite()->SetFlipbook(FB_Char_JumpStart);
-            GetSprite()->SetLooping(false);
-            GetSprite()->PlayFromStart();
-        }
-
+        bIsJumping = true;
     }
 }
 
 
 void AMyPaperCharacter::StopJumping()
 {
-    if (bIsJuming)
-    {
-        if (GetSprite())
-        {
-            GetSprite()->SetFlipbook(FB_Char_JumpEnd);
-            GetSprite()->SetLooping(false);
-            GetSprite()->PlayFromStart();
+    if (bIsJumping)
+    {       
 
-            bIsJuming = false;
-        }
-
+        bIsJumping = false;
         
         UE_LOG(LogTemp, Warning, TEXT("StopJumping!"));
 
@@ -156,7 +143,7 @@ void AMyPaperCharacter::StopJumping()
 void AMyPaperCharacter::Attack(const FInputActionValue& Value)
 {
     // 공격 로직을 여기에 구현
-    if (!bIsAttacking && bIsJuming == false)
+    if (!bIsAttacking && bIsJumping == false)
     {
         bIsAttacking = true;
         GetSprite()->SetFlipbook(FB_Char_Attack01);
@@ -190,7 +177,7 @@ void AMyPaperCharacter::UpdateCharacter()
 
 void AMyPaperCharacter::TurnRight()
 {
-    if (!bIsAttacking && !bIsJuming)
+    if (!bIsAttacking && !bIsJumping)
     {
         // Now setup the rotation of the controller based on the direction we are travelling
         const FVector PlayerVelocity = GetVelocity();
@@ -207,14 +194,46 @@ void AMyPaperCharacter::TurnRight()
                 Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
             }
         }
+
+        LastVelocity = PlayerVelocity;
     }
 }
 
 
 void AMyPaperCharacter::UpdateAnimation()
 {
+    const FVector PlayerVelocity = GetVelocity();
+    const float PlayerSpeed = PlayerVelocity.SizeSquared();
+
+    UPaperFlipbook* DesiredAnimation = FB_Char_Idle;
+
+    if (GetCharacterMovement()->IsFalling())
+    {
+        if (PlayerVelocity.Z > 0)
+        {
+            DesiredAnimation = FB_Char_JumpStart;
+        }
+        else
+        {
+            DesiredAnimation = FB_Char_JumpEnd;
+        }
+    }
+    else if (PlayerSpeed > 0.0f)
+    {
+        DesiredAnimation = FB_Char_Run;
+    }
+
+    if (GetSprite()->GetFlipbook() != DesiredAnimation)
+    {
+        GetSprite()->SetFlipbook(DesiredAnimation);
+    }
+}
+
+/*
+void AMyPaperCharacter::UpdateAnimation()
+{
     
-    if (!bIsAttacking && !bIsJuming)
+    if (!bIsAttacking && !bIsJumping)
     {
         const FVector PlayerVelocity = GetVelocity();
         const float PlayerSpeedSqr = PlayerVelocity.SizeSquared();
@@ -227,5 +246,25 @@ void AMyPaperCharacter::UpdateAnimation()
         }
 
     }
+
+    if (!bIsAttacking && bIsJumping) {
+        if (GetSprite())
+        {
+            GetSprite()->SetFlipbook(FB_Char_JumpStart);
+            GetSprite()->SetLooping(false);
+            GetSprite()->PlayFromStart();
+        }
+    }
+    else
+    {
+        if (GetSprite())
+        {
+            GetSprite()->SetFlipbook(FB_Char_JumpEnd);
+            GetSprite()->SetLooping(false);
+            GetSprite()->PlayFromStart();
+        }
+    }
     
 }
+
+*/
