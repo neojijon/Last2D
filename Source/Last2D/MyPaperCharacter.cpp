@@ -22,13 +22,23 @@
 
 AMyPaperCharacter::AMyPaperCharacter()
 {
+    //PaperZDAnimation = CreateDefaultSubobject<UPaperZDAnimationComponent>(TEXT("AnimationZDComponent"));
+
+    //if (PaperZDAnimation)
+    //{
+    //    AddInstanceComponent(PaperZDAnimation);
+    //    PaperZDAnimation->RegisterComponent();
+    //}
+    
+
+
 	
-    //Ä«¸Þ¶ó, ½ºÇÁ¸µ¾Ï ÄÄÆÛ³ÍÆ®¸¦ °ª ¼¼ÆÃ
+    //Ä«ï¿½Þ¶ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Û³ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     // Spring Arm Component
     SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
     SpringArm->SetupAttachment(RootComponent);
     SpringArm->TargetArmLength = 300.0f;
-    SpringArm->SetRelativeRotation(FRotator(-10.0f, -90.0f, 0.0f)); //È¾½ºÅ©·Ñ È­¸é 
+    SpringArm->SetRelativeRotation(FRotator(-10.0f, -90.0f, 0.0f)); //È¾ï¿½ï¿½Å©ï¿½ï¿½ È­ï¿½ï¿½ 
     //SpringArm->SetWorldRotation(FRotator(0.0f, 0.0f, -90.0f));
     SpringArm->bDoCollisionTest = false;
     SpringArm->bInheritPitch = false;
@@ -52,7 +62,7 @@ AMyPaperCharacter::AMyPaperCharacter()
     Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
     Camera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-    //Á¡ÇÁ°ü·Ã ¼öÄ¡ ÃÊ±âÈ­
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½Ê±ï¿½È­
         // Configure character movement
     GetCharacterMovement()->GravityScale = 2.0f;
     GetCharacterMovement()->AirControl = 0.80f;
@@ -86,7 +96,7 @@ void AMyPaperCharacter::BeginPlay()
     {
         //GetSprite()->SetFlipbook(ECharacterState::Idle);        
         UpdateAnimation(ECharacterState::Idle);
-        //GetSprite ÀÌº¥Æ® ÇÔ¼ö µî·Ï
+        //GetSprite ï¿½Ìºï¿½Æ® ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½
         GetSprite()->OnFinishedPlaying.AddDynamic(this, &AMyPaperCharacter::OnAttackFinished);
 
         //UE_LOG(LogTemp, Warning, TEXT("OnFinishedPlaying.AddDynamic"));
@@ -141,7 +151,7 @@ void AMyPaperCharacter::StopJump()
 
 void AMyPaperCharacter::Attack()
 {
-    // °ø°Ý ·ÎÁ÷À» ¿©±â¿¡ ±¸Çö
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½ï¿½ï¿½
     if (!bIsAttacking && bIsJumping == false && CurrentState != ECharacterState::Attack01)
     {
         bIsAttacking = true;
@@ -246,7 +256,7 @@ void AMyPaperCharacter::UpdateCharacter()
             {
                 UpdateAnimation(ECharacterState::Idle);
             }
-            // ¹æÇâ¿¡ µû¸¥ Ä³¸¯ÅÍ È¸Àü
+            // ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½
             TurnRight();
         }
 
@@ -261,7 +271,7 @@ void AMyPaperCharacter::TurnRight()
     const FVector PlayerVelocity = GetVelocity();
     const float PlayerSpeed = PlayerVelocity.Size();
 
-    // ¹æÇâ¿¡ µû¸¥ Ä³¸¯ÅÍ È¸Àü
+    // ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½
     if (Controller != nullptr)
     {
 

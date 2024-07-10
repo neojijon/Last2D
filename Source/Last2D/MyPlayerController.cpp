@@ -3,6 +3,9 @@
 
 #include "MyPlayerController.h"
 #include "MyPaperCharacter.h"
+
+#include "Public/MyPaperZDCharacter.h"
+
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 
@@ -59,10 +62,10 @@ void AMyPlayerController::Move(const FInputActionValue& Value)
 {       
     if (APawn* ControlledPawn = GetPawn())
     {
-        if (AMyPaperCharacter* MyCharacter = Cast<AMyPaperCharacter>(ControlledPawn))
+        if (AMyPaperZDCharacter* MyCharacter = Cast<AMyPaperZDCharacter>(ControlledPawn))
         {   
             FVector2D MovementVector = Value.Get<FVector2D>();
-            MyCharacter->Move(MovementVector.X);
+            MyCharacter->MoveRight(MovementVector.X);
         }
     }
     
@@ -87,7 +90,7 @@ void AMyPlayerController::Jump()
     UE_LOG(LogTemp, Warning, TEXT("Jump"));
    if (APawn* ControlledPawn = GetPawn())
     {
-        if (AMyPaperCharacter* MyCharacter = Cast<AMyPaperCharacter>(ControlledPawn))
+        if (AMyPaperZDCharacter* MyCharacter = Cast<AMyPaperZDCharacter>(ControlledPawn))
         {
             MyCharacter->StartJump();
         }
@@ -110,12 +113,12 @@ void AMyPlayerController::StopJumping()
 
 void AMyPlayerController::Attack(const FInputActionValue& Value)
 {
-    if (APawn* ControlledPawn = GetPawn())
+   /* if (APawn* ControlledPawn = GetPawn())
     {
-        if (AMyPaperCharacter* MyCharacter = Cast<AMyPaperCharacter>(ControlledPawn))
+        if (AMyPaperZDCharacter* MyCharacter = Cast<AMyPaperZDCharacter>(ControlledPawn))
         {
             MyCharacter->Attack();            
         }
-    }
+    }*/
 }
 

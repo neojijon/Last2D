@@ -19,7 +19,7 @@ template <typename T> struct TObjectPtr;
 UENUM(BlueprintType)
 enum class ECharacterState : uint8
 {
-	/** ÄÉ¸¯ÅÍ°¡ ¿òÁ÷ÀÓÀÌ ¾øÀ»¶§ µ¿ÀÛ */
+	/** ï¿½É¸ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
 	Idle UMETA(DisplayName = "Idle"),
 
 	/** The character is walking. */
@@ -49,9 +49,9 @@ enum class ECharacterState : uint8
 
 
 /** 
-* 2D ¾Ö´Ï¸ÞÀÌ¼Ç¿¡ Paper2D¸¦ »ç¿ëÇÏ´Â Ä³¸¯ÅÍ Å¬·¡½ºÀÔ´Ï´Ù. 
-* ÀÌ Å¬·¡½º´Â ´Ù¾çÇÑ Ä³¸¯ÅÍ »óÅÂ¸¦ °ü¸®ÇÏ°í ÀÌ¿¡ µû¶ó ¾Ö´Ï¸ÞÀÌ¼ÇÀ» 
-* ¾÷µ¥ÀÌÆ®ÇÕ´Ï´Ù. 
+* 2D ï¿½Ö´Ï¸ï¿½ï¿½Ì¼Ç¿ï¿½ Paper2Dï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½. 
+* ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¾ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½Ì¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ 
+* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½Õ´Ï´ï¿½. 
 */
 UCLASS(Blueprintable, BlueprintType)
 class LAST2D_API AMyPaperCharacter : public APaperCharacter
@@ -81,7 +81,7 @@ public:
 
 	void Walk();
 
-	//°ø°Ý Input ÀÌº¥Æ®
+	//ï¿½ï¿½ï¿½ï¿½ Input ï¿½Ìºï¿½Æ®
 	void Attack();
 
 	UFUNCTION()	
@@ -105,23 +105,25 @@ private:
 
 public:
 	/*
-	AllowPrivateAccess: ÀÌ ¸ÞÅ¸µ¥ÀÌÅÍ´Â ºí·çÇÁ¸°Æ® ÆíÁý±â¿¡¼­ ºñ°ø°³(private) ¼Ó¼º¿¡ Á¢±ÙÇÒ ¼ö ÀÖ°Ô ÇÕ´Ï´Ù. 
-	Áï, Å¬·¡½ºÀÇ ºñ°ø°³ ¼Ó¼ºÀÌ¶óµµ ºí·çÇÁ¸°Æ®¿¡¼­ ÇØ´ç ¼Ó¼ºÀ» ÀÐ°í ¾µ ¼ö ÀÖµµ·Ï Çã¿ëÇÕ´Ï´Ù.
-	"true": ÀÌ °ªÀº AllowPrivateAccess¸¦ È°¼ºÈ­ÇÕ´Ï´Ù. Áï, ÀÌ ¼Ó¼ºÀ» true·Î ¼³Á¤ÇÏ¸é ÇØ´ç ºñ°ø°³ ¼Ó¼ºÀÌ ºí·çÇÁ¸°Æ®¿¡¼­ Á¢±Ù °¡´ÉÇØÁý´Ï´Ù.
+	AllowPrivateAccess: ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ï¿½Í´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½â¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½(private) ï¿½Ó¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö°ï¿½ ï¿½Õ´Ï´ï¿½. 
+	ï¿½ï¿½, Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ó¼ï¿½ï¿½Ì¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ ï¿½Ó¼ï¿½ï¿½ï¿½ ï¿½Ð°ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Öµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
+	"true": ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ AllowPrivateAccessï¿½ï¿½ È°ï¿½ï¿½È­ï¿½Õ´Ï´ï¿½. ï¿½ï¿½, ï¿½ï¿½ ï¿½Ó¼ï¿½ï¿½ï¿½ trueï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ó¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.
 	
-	¿­°ÅÇü(enum)°ú ¸Ê(map) ±¸Á¶¸¦ »ç¿ëÇÏ¿© °ü¸®
-	TMapÀ» »ç¿ë ¿©·¯°³ÀÇ ÇÃ¸³ºÏÀ» È¿À²ÀûÀ¸·Î °ü¸®ÇÏ°íÀÚ ¸¸µê
+	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(enum)ï¿½ï¿½ ï¿½ï¿½(map) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½
+	TMapï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã¸ï¿½ï¿½ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
 	TMap<ECharacterState, TObjectPtr<class UPaperFlipbook>> CharacterAnimations;
 
 private:
-	// Ä«¸Þ¶ó¿Í Spring Arm Components ¸¦  Ãß°¡ÇÔ.
+	// Ä«ï¿½Þ¶ï¿½ï¿½ Spring Arm Components ï¿½ï¿½  ï¿½ß°ï¿½ï¿½ï¿½.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USpringArmComponent> SpringArm;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UCameraComponent> Camera;
-	
+		// Add PaperZD
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PaperZD", meta = (AllowPrivateAccess = "true"))
+	//TObjectPtr<class UPaperZDAnimationComponent> PaperZDAnimation;
 };
